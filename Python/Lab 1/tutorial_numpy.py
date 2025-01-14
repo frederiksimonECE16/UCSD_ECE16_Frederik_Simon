@@ -142,4 +142,4 @@ def solveQ7():
     print(array7.shape)
 
 solveQ7()
-
+solveQ3()
