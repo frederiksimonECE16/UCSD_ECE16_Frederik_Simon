@@ -27,7 +27,6 @@ array3 = np.vstack([np.hstack((array1, array1)) for _ in range(4) ])
 The __Questions 4 and 5__ asked you to explore the difference between the methods 'arange()' and 'linspace()' which both initialize an array. The difference between them is that you specify the step size for 'arange()' and for linspace you specify the amount of steps taken in the intervall. In Addtion, the specified upper boundary of the intervall is included in the array when using 'linspace()', but not when using 'arange()'. Furthermore, what I learned is that if using 'arange()' with declining negative numbers, the step size also has to be specified as a negative number, regardless if the intervall implies a negative stepping direction.
 
 For __Question 6__ I wrote down my array and then set the nonzero values to the correct values.
-[Bild]
 
 To solve __Question 7__ I split the string by the commas and specified the datatype as integer to avoid the array being initialized with floats or strings:
 ```python
@@ -55,6 +54,36 @@ Additionally, I learned the difference between using 'in' and '==' when comparin
 Using this knowledge I solved the last excercise, by looping over a given list until the string "SUCCESS" occurs in one of the entries and then braking the loop and printing "This worked!".
 
 The goal of the __Exercises 2.2__ are to get familiar with how to handle Errors and also catch them and make your code robust. To solve the Exercise 5, the function tries to decode the input variable from a byte array to a string, if this fails and a UnicodeDecodeError arises, the function returns an empty string.
+
+## Lab 1 Challenge 2 completed
+
+The goal of __Challenge 2__ was to get more familiarity with operating with NUMPY and especially ndarrys while working on a problem that is related to the real world. 
+For this the prices of the apple stock from 01/01/2019 to 04/30/2019 were given and we were tasked to find a algorithm that trades the apple stock based on evaluating the average value of the last three trading days. First a strategy array was created and populated by evaluating said average value of the last 3 days and then deciding if to sell, hold or buy share. This was indicated by populating the strategy array with the values -1 , 0 or 1 respectively. 
+To get the profits achieved with this simple technique I just used a neet property of NUMPY. That is the multiplication of two numpy arrays is done element wise. Therefore by multiplying the strategy array and the apple array, where the stock prices are saved and summing up the entries of the resulting array, you get the profits you have made in the 4 months. One thing I struggled with, was that you have to negate your product before summing up because if you sell and print a "-1" into your strategy array because you sold a share. But, when looking at your profit you have have to account for a increase, vice versa for buying a share. Additionally I also computed my resulting shares by summing up the elements in the strategy array and summing the result up with the shares that I had at the start of the task. The last task was to improve the program such that the trading gets more profitable.
+
+For improving the code I had the ideas to implement a stop loss fuctionality and secondly, to take a larger amount of days into account, when computing the average. I implemented the second idea with the additional condition that I begin to sell my stock 50 days before the four months end to have a net profit in cash and not just in stock. Thus, I just increased the waiting period at the beginning due to insufficient data and increased the elements to average while also implementing the 50 days selling period. Together with the original program the output printed in my console is this:
+[screenshot of the console for the original program and the modified program](/ECE16_Frederik_Simon/ece-16-winter-2025-frederiksimonECE16/Python/Lab%201/images/Screenshot_console_challenge_2_original_and_new_program.png)
+
+In reality you would of course keep buying longer and sell larger amounts of stock at the same time when you think a peak has been reached, to maximize the cash profit here I decided to begin selling 50 days before the deadline to have some cash profit. However if you would take the method of the 7 days average and sell all your stocks on day 81 the profit would be much higher.
+
+## Lab 1 Challenge 3 completed 
+
+In the __Challenge 3__ the goal was to design a Translator that transforms english words to pig latin and back into english and in this proccess training the brain to think like a programer.
+The rules for pig latin are relatively striagthforward, when leaving out the edge cases. When the word starts with consonants, these consonants should be shifted to the back of the word followed by an appended "ay". If the word starts with an "y" the same rules apply for the consonant but an "ey" is appended. If the word starts with a vowel, simply a "yay" should be added at the end.
+To solve this problem, I first created a string with all the vowels and used the keyword 'in' to check if the first character of the input string is either a "y" or not a vowel, subsequently then a consonant. If its a y i set the boolean 'y_start' to True to later append the right ending string. Either way I copy the consonants with the help of a loop to the back of the word until a vowel is at the beginning of the word and then append the right string. If the input string has a vowel as a first character right away I just append "yay".
+
+To treat the edge case that hyphenated words should be translated word for word I created a second function named 'translate()' which does basically all the translating and the english_to_pig_latin() splits the inputs, calls for translation and pieces together the results. Additionaly I have two If loops that cover the edge cases that if the letters "q" and "u" appear together they should be also treated together and that punctuations should also be copyed at the back of the word. Furthermore there is also a break statement in the while loop that monitors if there is a "y" followed by a "e", because then the y mostly acts as an vowel and should not be copyed at the end.
+
+I struggled at first with the words which were beginning with "Y" because I accounted only for lowercase "y" and also with words that were hyphenated multiple times because in the beginning I had just implemented a solution for once hyphenated words. But in the end all words are translated correctly from english to pig latin.
+
+To convert the string back to english we can use a dictionary to make it easier. I choose to use 'pyspellcheker', because it was relatively easy to install for me. For the translation I first catch the punctuations as well as the specific endings from the words and keep track if the word starts with a "y" in english. Then if it is a word that starts with a "y" in english I simply shift all the characters back until the word again starts with a 'y' and try to find it in the dictionary. If it does not start with a "y" I simply shift one character back and see if the word can be found and if not I do this again and again until the word is found or ten iterations have gone by. This is my console output for the __Challenge 3__ in two pictures, because the output was fairly big:
+[first screeenshot of the console for Challenge 3](/ECE16_Frederik_Simon/ece-16-winter-2025-frederiksimonECE16/Python/Lab%201/images/first_screenshot_challenge_3_console.png),
+[second screenshot of the console for Challenge 3](/ECE16_Frederik_Simon/ece-16-winter-2025-frederiksimonECE16/Python/Lab%201/images/second_screenshot_challenge_3_console.png)
+
+
+My algorithm to translate piglatin into english does not work perfectly for all edge cases as sometimes not the right word is recognized.
+
+
 
 
 

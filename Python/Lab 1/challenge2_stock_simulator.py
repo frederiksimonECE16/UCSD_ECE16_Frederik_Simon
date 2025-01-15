@@ -41,6 +41,10 @@ for entry in strategy:
         #Compute the average value of the last 3 days
         average_value_3_days = (apple[i-3]+apple[i-2]+apple[i-1])/3
         
+        #Debug:
+        #print("average value", average_value_3_days)
+        #print("apple stock", apple[i])
+        
 
         if average_value_3_days < apple[i]:
             strategy[i] = -1
@@ -58,8 +62,11 @@ for entry in strategy:
 #print the stragety array
 print("Strategy:", strategy)
 
+#print(np.sum(strategy))
+
 #4. multiply the arrays to get a array that contains the net money made on the specific day 
-product = apple*strategy
+product = -apple*strategy
+#print("Prodeuct:", product)
 
 #create a variable named profits and calculate how much money would the program make after 4 months
 #by summing up the array component wise 
@@ -82,22 +89,92 @@ shares += diff_shares
 print("profits after 4 months:", profits)
 print("shares after 4 months:", shares)
 
-#7. Two different methods to improve the algorithm
-#1.: invest early, hold the shares and sell later 
-#2.: 
-
-
-
-
-
-
-
-
 #debug:
 #print(len(product))
 #print (product)
 #print(profits)
 #print(strategy.mean()*apple.mean()*(len(apple)-3))
+
+#7. Two different methods to improve the algorithm
+#1.: implement stop losses 
+#2.: taking broader average and selling the last 50 days. I implemented this
+
+print("### New Strategy ###")
+#Idea 2
+#create ndarray named stragety_improve to inicate whether to sell, buy or do nothing
+#1 == buy, 0 == do nothing, -1 sell
+strategy_improve= np.zeros(len(apple_stock))
+
+#3. populate the strategy_improve array
+i = 0
+for entry in strategy_improve:
+    
+    #first 3 entries have to be 0 because of insufficient data
+    if i < 7:
+       strategy_improve[i] = 0
+    
+    #50 days sell period to have cash profit
+    elif i >= len(strategy_improve)-50:
+        strategy_improve[i] = -1
+    
+    else:
+        #Compute the average value of the last 3 days
+        average_value_3_days = (apple[i-7]+apple[i-6]+apple[i-5] + apple[i-4] + apple[i-3] + apple[i-2] + apple[i-1])/3
+        
+        #Debug:
+        #print("average value", average_value_3_days)
+        #print("apple stock", apple[i])
+        
+
+        if average_value_3_days < apple[i]:
+            strategy_improve[i] = -1
+        
+        
+        elif average_value_3_days > apple[i]:
+            strategy_improve[i] =  1 
+
+        
+        elif average_value_3_days == apple[i]:
+            strategy_improve[i] =  0
+
+    i += 1
+
+#print the stragety array
+print("Strategy improved:", strategy_improve)
+
+#4. multiply the arrays to get a array that contains the net money made on the specific day 
+product_improve= -apple*strategy_improve
+#print("Prodeuct:", product)
+
+#create a variable named profits and calculate how much money would the program make after 4 months
+#by summing up the array component wise 
+profits_improve = product_improve.sum()
+#print(profits)
+
+#5. Compute the amount of shares after 4 months 
+#initialize amount_shares with a start value 100
+shares_improve = 100
+
+#calculate difference of shares 
+diff_shares_improve = np.sum(strategy_improve)
+
+#sum them upp
+shares_improve += diff_shares_improve
+
+
+
+#6. print the results 
+print("profits after 4 months improved:", profits_improve)
+print("shares after 4 months improved:", shares_improve)
+
+
+
+
+
+
+
+
+
 
     
 
