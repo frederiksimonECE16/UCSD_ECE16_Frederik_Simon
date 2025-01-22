@@ -136,6 +136,7 @@ void loop() {
    //prevent the timer costantly printing zero by indicating that the zero has been reached and stop the timing
    if(timer == 0){
     
+      //if zero has not been printed because the decrementing Interval and the printing Interval did not line up print the zero
       if(!zero_printed && is_timing){
       
         Serial.println(timer);

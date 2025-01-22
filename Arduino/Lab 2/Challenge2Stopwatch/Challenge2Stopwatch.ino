@@ -63,6 +63,7 @@ void loop() {
   button_press_time = current_time;
   }
 
+//catch if the button is pressed down long enough to reset 
   if(button_state == LOW)
   {
     
@@ -83,7 +84,7 @@ void loop() {
 
   
 
-  
+  //print and increment stopwatch if it is running
   if(is_counting){
     
     unsigned long counting_time_now= millis();
