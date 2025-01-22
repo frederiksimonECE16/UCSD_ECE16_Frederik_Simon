@@ -72,7 +72,7 @@ The stopwatch works as desired:
 
 ![gif of the stopwatch starting, stopping, resuming and reseting at a push or press of the connected button](images/c2.gif)
 
-## Lab Challenge 3 completed 
+## Lab 2 Challenge 3 completed 
 
 In __Challenge 3__ a stopwatch should be programmed with the same physical setup as in Challenge 2. When pushing the button the timer should increment the timer which indicates the seconds that will elapse until the timer reaches zero. After three seconds of not pushing the button the timer should start to count the seconds down until the timer reaches 0. Similarly as in Challenge 2the timer should print its value every 100ms when counting down and should reset after 3s of holding down the button.
 
