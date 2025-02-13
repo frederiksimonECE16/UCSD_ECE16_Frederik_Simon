@@ -16,16 +16,16 @@ unsigned long lastPress = 0;
 //specify the time where no button push is registered
 const unsigned long debounceTime = 500;
 
-int xArray[512];
-int yArray[512];
-int zArray[512];
+int xArray[512] = {0};
+int yArray[512] = {0};
+int zArray[512] ={0};
 
 // declare indices for reading and writing
 int i= 0;
 int readindex = 0;
 
 bool activated = false;
-
+int state = 0; // 0 = collecting, 1 = sending, 2 = display, 3 = reset
 
 
 void setup() {
@@ -41,7 +41,8 @@ void setup() {
 }
 
 void loop() {
-  
+  //string to store last command and to prevent constant updating and flashing of the OLED displayS
+  static String last_command("");
   String command = receiveMessage();
   if(command == "sleep") {
     activated = false;
@@ -51,25 +52,38 @@ void loop() {
     activated = true;
     writeDisplay("Activated", 0, true);
   }
+  else if(command != "") {
+    sending = true;
+    if(command != last_command){
+    writeDisplay("",0,true);
+    writeDisplayCSV(command.c_str(), 1);
+    last_command = command;
+    }
+  }
   if(activated){
     
-    //detect if button was pressed 
     detectButton();
-    if(!sending){
+    
+    if(state == 0){
+    
+    //detect if button was pressed 
+    
       
-      //get accelerometer measurements 
-      readAccelSensor();
-      //tell the user to start making movements 
-      writeDisplay("Collect Data", 0, true);
+    //get accelerometer measurements 
+    readAccelSensor();
+    //tell the user to start making movements 
+    writeDisplay("Collect", 0, true);
       
-      //if data is available update the array and the index with modulo 512 to get a circular buffer
-      if(sampleSensors()) {
-        xArray[i] = ax;
-        yArray[i] = ay;
-        zArray[i] = az;
-        i = (i + 1) % 512;
+    //if data is available update the array and the index with modulo 512 to get a circular buffer
+    if(sampleSensors()) {
+      xArray[i] = ax;
+      yArray[i] = ay;
+      zArray[i] = az;
+      i = (i + 1) % 512;
       }
-    }else if(sending) 
+    }
+    //send the most recent data to the PC 
+    else if(state ==1) 
     {
       //send most recent 
       for(int j = 0; j < 512; j++){
@@ -81,12 +95,13 @@ void loop() {
         sendMessage(response);
 
       }
+      state = 2;
     }
   
-    if(reset){
+    // reset the program and loop over arrays to set the entries to 0
+    if(state == 3){
       i = 0;
-      reset = false;
-      sending = false;
+      state = 0;
       for(int i = 0; i < 512; i++) 
       {
         xArray[i] = 0;
@@ -112,14 +127,13 @@ void detectButton() {
     
     //store time of button press and send "pressed" to the python script indicating the button has been pressed
     lastPress = current_time;
-    if(!sending){
+    if(state == 0){
       //if previously data was recorded and button is pressed send data 
-      sending = true;
-      reset = false;
+      state = 1;
 
-    }else if(sending)
+    }else if(state == 2)
     {
-      reset = true;
+      state = 3;
       
     }
 

@@ -10,6 +10,7 @@ class Pedometer:
   Encapsulated class attributes (with default values)
   """
   __steps = 0        # the current step count
+  __jumps = 0
   __l1 = None        # CircularList containing L1-norm
   __filtered = None  # CircularList containing filtered signal
   __num_samples = 0  # The length of data maintained
@@ -18,8 +19,9 @@ class Pedometer:
   __b = None         # Low-pass coefficients
   __a = None         # Low-pass coefficients
   __thresh_low = 3   # Threshold from Tutorial 2
-  __thresh_high = 50 # Threshold from Tutorial 2
-
+  __thresh_high = 25 # Threshold from Tutorial 2
+  __thresh_low_jumping = 25
+  __thresh_high_jumping = 100
   """
   Initialize the class instance
   """
@@ -53,14 +55,15 @@ class Pedometer:
     # Grab only the new samples into a NumPy array
     x = np.array(self.__l1[ -self.__new_samples: ])
 
-    if len(x) < 12:
-      x = np.pad(x, (12 - len(x), 0), mode='constant')
-
     # Filter the signal (detrend, LP, MA, etc…)
     x_dt = filt.detrend(x)
-    x_LP = filt.filter(self.__b, self.__a, x_dt)
-    x_grad = filt.gradient(x_LP)
-    x_ma = filt.moving_average(x_grad, 20)
+    if len(x_dt) > 12:
+      x_LP = filt.filter(self.__b, self.__a, x_dt)
+      x_grad = filt.gradient(x_LP)
+      x_ma = filt.moving_average(x_grad, 20)
+    else:
+      x_ma = x_dt
+    
    
 
     # Store the filtered data
@@ -68,13 +71,15 @@ class Pedometer:
 
     # Count the number of peaks in the filtered data
     count, peaks = filt.count_peaks(x_ma,self.__thresh_low,self.__thresh_high)
+    jump_count, peaks = filt.count_peaks(x_ma, self.__thresh_low_jumping, self.__thresh_high_jumping)
 
     # Update the step count and reset the new sample count
     self.__steps += count
+    self.__jumps += jump_count
     self.__new_samples = 0
 
     # Return the step count, peak locations, and filtered data
-    return self.__steps, peaks, np.array(self.__filtered)
+    return self.__steps, self.__jumps, peaks, np.array(self.__filtered)
 
   """
   Clear the data buffers and step count

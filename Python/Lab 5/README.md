@@ -107,7 +107,36 @@ To implement the desired logical flow, I implemented:
 * if the python sends the "wearable" command the data collection is started where the i-th component of the Arrays is updated with the current accelerometer measurements 
 * i is updated such that it resets after reaching the end of the array
 * this can be done by adding a modulo 512 to the updating statement which evaluates to 0 when i reaches 512 creating a circular buffer
-*
+* when the button is pushed once the boolean sending is set to true and the MCU sends the data to the pc and stops recording data
+* it sends the data by looping over the array and sending the ith component first because this is the oldest data and then loops over the array sending the data in the right sequence 
+* Python receives the message consisting of the time and the three accelerometer readings and adds this data to the insantiated pedometer object
+* using the pedometer object the data is then processed in the same way as described in the challenge 1 
+* the difference is that I added an additional two attributes to the pedometer class that are the threshholds when the program should count a peak as a jump 
+* added also a additional return value 'jumps' to the process method of the pedometer class which is the times how often the program detected a jump 
+* if the button is pushed again the arrays are reseted and the program starts again to collect data
+
+* I got the error that the input vector x must be greater than padlen, which is 12 when sending the data to my pc
+* after researching I found out that the input vector of filtfilt() has to be larger than a certain number that is determined by the order of the filter that is applied 
+* I tried to solve this by checking if the of the new data array exceeds 12 and only processing the signal if its larger than that
+* In my opinion the error was occuring because as soon as python was seeing data it began to process the data having to few samples
+
+* Additionally I had the error that my program just received 0 as a value
+* The solution I got after asking in the tutorial was to only process the data if I received all 512 data points of the array in python and then updating the step and jump count 
+
+* for the logic I implemented a workflow with states
+* after the MCU is activated it is in the Collect state 0 which means it collects data after the button is pressed it goes into sending state and after finishing the sending it jumps into display state 
+* if the button is pressed again after, the buffer is set to zero and the MCU jumps to the collect state and records new data 
+
+* I updated the thresholds of the count and the jumps that from 3-30 it is counted as a step and from 30 to 100 it is counted as an jump
+
+The algorithm then detects the difference of steps and jumps:
+
+![differentiation of jumps and steps](images/Lab_5_Challenge_2_jump_differentiation.JPEG)
 
 
-* when running the algorithm I got an error theat the input vector must be greater than padlen
+This is how the algorithm works in action:
+
+![demonstration of the algorithm detection](images/Lab_5_Challenge_2_demonstration.gif)
+
+
+
