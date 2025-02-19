@@ -16,7 +16,9 @@ class HRMonitor:
   __num_samples = 0  # The length of data maintained
   __new_samples = 0  # How many new samples exist to process
   __fs = 0           # Sampling rate in Hz
-  __thresh = 0.6     # Threshold from Tutorial 2
+  __thresh = 0.90    # Threshold set in Challenge 2
+  #__thresh = 0.54   #Threshold Challenge 1
+  #__thresh = 0.95   #Threshold Challenge 3
 
   """
   Initialize the class instance
@@ -40,7 +42,7 @@ class HRMonitor:
       x = x.tolist()
 
 
-    if isinstance(x, int):
+    if isinstance(x, int) or isinstance(x, np.float64):
       self.__new_samples += 1
     else:
       self.__new_samples += len(x)
@@ -53,7 +55,11 @@ class HRMonitor:
   """
   def compute_heart_rate(self, peaks):
     t = np.array(self.__time)
-    return 60 / np.mean(np.diff(t[peaks]))
+
+    if len(peaks) == 0:
+      return 0
+    else:
+      return 60 / np.mean(np.diff(t[peaks]))
 
   """
   Process the new data to update step count
@@ -79,7 +85,7 @@ class HRMonitor:
     self.__new_samples = 0
 
     # Return the heart rate, peak locations, and filtered data
-    return self.__hr, peaks, np.array(self.__filtered)
+    return self.__hr, peaks, np.array(self.__filtered)#, np.array(self.__ppg) #for Challenge 3 debugging 
 
   """
   Clear the data buffers and step count
