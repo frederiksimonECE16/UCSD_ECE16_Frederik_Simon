@@ -30,10 +30,10 @@ void loop() {
   //receive message and print it out if the string is not empty using the Csv function
   String message = receiveMessage();
   if (message != ""){
-
-     
+      
+      
       //Serial.println(message);
-      writeDisplayCSV(message, 4);
+      writeDisplayCSV(message, 3);
   }
   
     

@@ -1,4 +1,5 @@
 from ECE16Lib.CircularList import CircularList
+import ECE16Lib.MLTraining as ml
 import ECE16Lib.DSP as filt
 import numpy as np
 
@@ -95,3 +96,22 @@ class HRMonitor:
     self.__time.clear()
     self.__ppg.clear()
     self.__filtered.clear()
+
+  def train(self,fs):
+
+    #train model with all the data in the data folder and return trined GMM model
+    GMM = ml.train_model(fs)
+    
+    return GMM
+
+  def predict(self, gmm, fs):
+
+    # process stored data and process it 
+    hr_est, peaks, filtered  = self.process()
+    
+    #assign labels and estimate heart rate 
+    labels = gmm.predict(filtered.reshape(-1,1))
+    hr_est, peaks = ml.estimate_hr(labels, len(filtered), fs)
+    print(np.sum(peaks))
+
+    return hr_est, filtered 

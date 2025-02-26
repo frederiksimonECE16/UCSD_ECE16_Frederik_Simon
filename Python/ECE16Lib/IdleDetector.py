@@ -5,11 +5,11 @@ from time import time
 import numpy as np
 
 class IdleDetector:
-    def __init__(self, port="COM8", baud_rate=115200, num_samples=250, refresh_time=0.1):
+    def __init__(self, comms_passed, num_samples=250, refresh_time=0.1):
        
        
         #define the attributes that are passed to the class
-        self.comms = Communication(port, baud_rate)
+        self.comms = comms_passed
         self.num_samples = num_samples
         self.refresh_time = refresh_time
 
