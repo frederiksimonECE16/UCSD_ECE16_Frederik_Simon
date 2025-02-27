@@ -87,6 +87,8 @@ This is what I did:
 
 The general Idea is to have a button that switches between Weather watch, Hr-monitor, Pedometer and idle detector and for controlling the functunalities of some of them a secon button that interacts with the different objects
 
+#### Python
+
 * for the Weather Watch I created a class file that makes the functuanality easy to use and defined a main method that can be called and then the weather watch runs
 * in the main program first the different objects for the weather watch, the idle detector, the HR-monitor and the Pedometer are created all with the same sampling frequency and amount of samples 
 * a state variables is introduced to track and switch between the 4 different states and functionalities 
@@ -100,7 +102,23 @@ The general Idea is to have a button that switches between Weather watch, Hr-mon
 * if the state is 3 the method idle.run() is called and this runs the idle detector 
 * i spent a lot of time debuggin because the communications parts implemented in the old OOP modules interfered with the communication of Challenge 3 
 * In addition I had problems detecting button pushes when I also sent ppg and accelerometer data 
-* without streaming data from the MCU the weather watch works and the pyhton switches through the states but as soon as I send data the buttons do not function anymore 
+* the solution at least for the part of the weather watch was not to send data and beginning to send data when th emachine enteres the second state 
+* also I had to eliminate the loops in the respective classes and only loop in my main program as otherwise the program got stuck in the other files  
+
+Arduino: 
+
+* I initialize all the variables and steup the different functionalities 
+* I check for the usual messages to activate and deactivate the MCU
+* I check for messages that are sent from the IdleDetector object and do the required action and display the right message 
+* send the message with time acceleration and ppg data if sending is true 
+* detect button presses for both buttons, one to switch the state, one to activate different functionalities 
+
+* After some hardware issues i ran into becuase my accelerometer was not working properly 
+* I got to a state where the weatherwatch, the heart rate monitor and the step counter is working, the ile detector is not working fully but i can toggle it on and off and it recognizes some activity of the MCU
+
+[Demontration of Challenge 3](https://youtu.be/eQtu1Mom2Ek)
+
+
 
 
 

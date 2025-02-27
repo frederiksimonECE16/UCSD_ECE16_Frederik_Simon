@@ -11,6 +11,18 @@ bool sending;
 const int BUTTON_PIN = 13;
 const int SwitchButton = 17;
 
+//blink LED with 5Hz
+const unsigned long blink_Interval = 1000/5;
+
+//define pin for Motor, LED 
+int LED_PIN = 12;
+int MOTOR_PIN = 16;
+
+// store time LED has last blinked 
+unsigned long lastBlink = 0;
+
+int LED_state = LOW;
+
 //store current and last button state of both buttons 
 int last_button_state = HIGH;
 int button_state;
@@ -24,7 +36,9 @@ unsigned long lastSwitchPress;
 
 //specify the time where no button push is registered
 const unsigned long debounceTime = 500;
+const unsigned long sendInterval = 300;
 
+unsigned long lastSendTime;
 
 void setup() {
 
@@ -38,6 +52,8 @@ void setup() {
   //define pin mode for button
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   pinMode(SwitchButton, INPUT_PULLUP);
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(MOTOR_PIN, OUTPUT);
 }
 
 void loop() {
@@ -52,8 +68,36 @@ void loop() {
     writeDisplay("Sleep", 0, true);
   }
   else if(command == "wearable") {
-    sending = true;
+    sending = false;
     writeDisplay("Wearable", 0, true);
+  }  
+  else if(command == "active") {
+    sending = true;
+    writeDisplay("Stay Active!", 0, true);
+  }
+  //if person is inactive for 5s display a message and blink LED
+  else if(command == "inactive5") {
+    sending = true;
+    writeDisplay("Get UP!", 0, true);
+    //blink LED 
+    unsigned long current_time = millis();
+    if(current_time - lastBlink >= blink_Interval)
+    {
+      LED_state != LED_state;
+      analogWrite(LED_PIN, LED_state);
+    }
+
+  }
+  //if person is inactive for 10s and motor has buzzed for a second print a message
+  else if(command == "inactive10") {
+    sending = true;
+    writeDisplay("Get UP!", 0, true);
+  }
+  //if buzz is sent buzz the motor and print a message
+  else if(command == "buzz") {
+    sending = true;
+    writeDisplay("Get UP!", 0, true);
+    analogWrite(MOTOR_PIN, HIGH);
   }
   else if(command != "")
   {
@@ -61,26 +105,26 @@ void loop() {
 
       command = command.substring(1);
       writeDisplayCSV(command,3);
+      sending = false;
 
     }
-    else{
+    else{ 
       
       writeDisplay(command.c_str(), 0, true);
+      sending = true;
 
-    } 
-    
-    
-  
+  } 
   }
-
+  
+  unsigned long current_time = millis();
   if(sending && sampleSensors()) {
+    lastSendTime = current_time;
     String response = String(sampleTime);
     response += "," + String(ax) + "," + String(ay) + "," + String(az);
     response += "," + String(ppg);
     sendMessage(response);
   }
   
-    
 }
 
 void detectButton() {

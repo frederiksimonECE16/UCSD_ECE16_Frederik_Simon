@@ -40,13 +40,15 @@ if __name__ == "__main__":
         
         #check if state button has been pressed 
         message = comms.receive_message()
-        print(wear_state, message)
         
         if message != None:
+            print(wear_state, message)
             if message.strip() == "statepressed":
                 
                 #increment state if it is 3 go back to 0
                 wear_state = (wear_state + 1) % 4
+                
+                comms.send_message("switch")
             
             elif message.strip() == "pressed":
                 message = message.strip()
@@ -64,25 +66,27 @@ if __name__ == "__main__":
             
         elif(wear_state == 1):
 
-            try:       
+            try: 
+                print("try")
                 #convert time into seconds and time and ppg into integer   
                 t = int(m1)/1e3
                 ppg = int(m5)
                 hr_monitor.add(t,ppg)
+                #print(ppg)
             except:
                 continue
 
             # if enough time has elapsed, clear the axes, and plot the 4 plots
             current_time = time()
             if (current_time - previous_time > refresh_time):
-                    previous_time = current_time
+                previous_time = current_time
 
             #print("loop")
             #process data 
             #hr, peaks, filtered = hr_monitor.process()
             #print(hr)
 
-            hr_est, filtered  = hr_monitor.predict(gmm, fs)
+                hr_est, filtered  = hr_monitor.predict(gmm, fs)
                 
             #only display the heart rate if the ppg is over 25000 a value that in most cases is exceeded when a finger 
             #is placed on the ppg sensor to prevent the normalized noise to be displayed
@@ -104,12 +108,17 @@ if __name__ == "__main__":
             plt.pause(0.001)
 
         elif(wear_state == 2):
+
+            print(m2,m3, m4)    
             
             try:
+                
                 # Collect data in the pedometer
                 ped.add(int(m2),int(m3),int(m4))
             except:
                 continue
+
+            #print("yes")
 
             # if enough time has elapsed, process the data and plot it
             current_time = time()
@@ -118,12 +127,12 @@ if __name__ == "__main__":
 
           
                 #process data by calling the method of the pedometer class
-                steps, peaks, filtered = ped.process()
+                steps, jumps, peaks, filtered = ped.process()
                 
                 #create a step string to make it easier to display
-
+                step_str = "Steps:" + str(steps)
                 #send the step counter to the MCU as a string 
-                comms.send_message(str(steps))
+                comms.send_message(step_str)
 
                 print("Step count: {:d}".format(steps))
         
@@ -136,7 +145,7 @@ if __name__ == "__main__":
 
         elif(wear_state == 3):
 
-            detector.run()
+            detector.run(message)
                 
 
   finally:

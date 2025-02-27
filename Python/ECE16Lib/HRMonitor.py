@@ -68,6 +68,8 @@ class HRMonitor:
   def process(self):
     # Grab only the new samples into a NumPy array
     x = np.array(self.__ppg[ -self.__new_samples: ])
+    if len(x) < 2:
+      return 0, [], []
 
     # Filter the signal (feel free to customize!)
     x = filt.detrend(x, 25)
@@ -108,6 +110,8 @@ class HRMonitor:
 
     # process stored data and process it 
     hr_est, peaks, filtered  = self.process()
+    if len(filtered) == 0:
+      return 0, []
     
     #assign labels and estimate heart rate 
     labels = gmm.predict(filtered.reshape(-1,1))

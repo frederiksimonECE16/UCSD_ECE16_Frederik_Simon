@@ -30,25 +30,21 @@ class IdleDetector:
         self.buzz_threshold = 1     
 
         #clear
-        self.comms.clear()
+        #self.comms.clear()
 
-    def run(self):
+    def run(self, message):
         #define the main function with a try exept block
-        try:
+    
             previous_time = 0
             
-            while True:
-                message = self.comms.receive_message()
-                
-                #if message is not None call the private process method 
-                if message != None:
-                    self.__process_message(message)
+            
+            #message = self.comms.receive_message()
+            
+            #if message is not None call the private process method 
+            if message != None:
+                self.__process_message(message)
 
-        except KeyboardInterrupt:
-            print("Program stopped by user.")
-        finally:
-            self.comms.send_message("sleep")
-            self.comms.close()
+       
 
     #private method to handle incoming messages
     def __process_message(self, message):
@@ -64,15 +60,15 @@ class IdleDetector:
             return
 
         try:
-            (m1, m2, m3, m4) = message.split(',')
+            (m1, m2, m3, m4, m5) = message.split(',')
         except ValueError:
             return  # Ignore corrupted messages
 
         #add values to the circular lists
-        self.times.add(m1)
-        self.ax.add(m2)
-        self.ay.add(m3)
-        self.az.add(m4)
+        self.times.add(int(m1))
+        self.ax.add(int(m2))
+        self.ay.add(int(m3))
+        self.az.add(int(m4))
 
         self.__detect_motion()
 
